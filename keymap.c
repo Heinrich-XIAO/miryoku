@@ -21,13 +21,29 @@ enum layers {
 #define U_CUT S(KC_DEL)
 #define U_UND KC_UNDO
 
+enum custom_keycodes {
+    CK_QA = SAFE_RANGE,
+    CK_WS,
+    CK_ED,
+    CK_RF,
+    CK_TG,
+    CK_YH,
+    CK_UJ,
+    CK_IK,
+    CK_OL,
+    CK_PS,
+    CK_LQ,
+    CK_CV,
+    CK_NM
+};
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_CVM] = LAYOUT(
         KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,     KC_NO, KC_NO, KC_NO, KC_NO, TG(_BASE), KC_NO,
-        KC_NO, KC_Q, KC_W, KC_E, KC_R, KC_T,         KC_Y, KC_U, KC_I, KC_O, KC_P, KC_LBRC,
+        KC_NO, KC_5, KC_5, KC_5, KC_5, KC_5,         KC_Y, KC_U, KC_I, KC_O, KC_P, KC_LBRC,
         KC_NO, KC_A, KC_S, KC_D, KC_F, KC_G,         KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_QUOT,
-        KC_NO, KC_Z, KC_X, KC_C, KC_V, KC_B,         KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_NO,
-                                KC_NO, KC_C, KC_V,       KC_N, KC_M, KC_NO
+        KC_NO, CK_QA, CK_WS, CK_ED, CK_RF, CK_TG,         CK_YH, CK_UJ, CK_IK, CK_OL, CK_PS, CK_LQ,
+                                CK_CV, KC_C, KC_V,       KC_N, KC_M, CK_NM
     ),
 
     // Standard Miryoku QWERTY Base Layer
@@ -55,7 +71,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_NO, KC_LCBR, KC_AMPR, KC_ASTR, KC_LPRN, KC_RCBR,     KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
         KC_NO, KC_COLN, KC_DLR, KC_PERC, KC_CIRC, KC_PLUS,     KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
         KC_NO, KC_TILD, KC_EXLM, KC_AT, KC_HASH, KC_PIPE,     KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO,
-                                KC_NO, KC_RPRN, KC_UNDS,       KC_NO, KC_NO, KC_NO
+                                KC_LPRN, KC_RPRN, KC_UNDS,       KC_NO, KC_NO, KC_NO
     ),
 
     // Standard Miryoku FUN Layer (function keys on left hand)
@@ -94,3 +110,38 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                 KC_NO, KC_MUTE, KC_MPLY,       KC_MSTP, KC_NO, KC_NO
     )
 };
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    uint16_t tap_key = KC_NO;
+    uint16_t hold_key = KC_NO;
+
+    switch (keycode) {
+        case CK_QA: tap_key = KC_Q; hold_key = KC_A; break;
+        case CK_WS: tap_key = KC_W; hold_key = KC_S; break;
+        case CK_ED: tap_key = KC_E; hold_key = KC_D; break;
+        case CK_RF: tap_key = KC_R; hold_key = KC_F; break;
+        case CK_TG: tap_key = KC_T; hold_key = KC_G; break;
+        case CK_YH: tap_key = KC_Y; hold_key = KC_H; break;
+        case CK_UJ: tap_key = KC_U; hold_key = KC_J; break;
+        case CK_IK: tap_key = KC_I; hold_key = KC_K; break;
+        case CK_OL: tap_key = KC_O; hold_key = KC_L; break;
+        case CK_PS: tap_key = KC_P; hold_key = KC_SCLN; break;
+        case CK_LQ: tap_key = KC_LBRC; hold_key = KC_QUOT; break;
+        case CK_CV: tap_key = KC_C; hold_key = KC_V; break;
+        case CK_NM: tap_key = KC_N; hold_key = KC_M; break;
+        default: return true;
+    }
+
+    if (tap_key != KC_NO && hold_key != KC_NO) {
+        if (record->event.pressed) {
+            register_code(tap_key);
+            register_code(hold_key);
+        } else {
+            unregister_code(tap_key);
+            unregister_code(hold_key);
+        }
+        return false;
+    }
+
+    return true;
+}
